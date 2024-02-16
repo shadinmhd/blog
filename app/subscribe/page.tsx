@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar"
 import Link from "next/link"
 import { FormEvent, useState } from "react"
 import { subscribe } from "@/lib/subscription"
+import { emailRegex } from "@/lib/regexes"
 
 const Subscribe = () => {
 	const [email, setEmail] = useState("")
@@ -10,7 +11,7 @@ const Subscribe = () => {
 
 	const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		if (email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+		if (email.match(emailRegex)) {
 			await subscribe(email)
 		}
 		else {
