@@ -10,18 +10,30 @@ import NewSegment from "@/components/admin/editor/NewSegment"
 
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
-const Editor = () => {
+const Editor = ({ params }: { params: { id: string } }) => {
 
-	const [id, setId] = useState<String>("")
+	const [id, setId] = useState<String>(params.id)
 	const [title, setTitle] = useState("")
 	const [titleErrorMessage, setTitleErrorMessage] = useState("")
 	const [description, setDescription] = useState("")
 	const [thumbnail, setThumbnail] = useState("")
 	const [segments, setSegments] = useState<SegmentInterface[]>([])
 
+	useEffect(() => {
+		api.get(`/api/post/${id}`)
+			.then(({ data }) => {
+				setDescription(data.post.description || "")
+				setTitle(data.post.title)
+				setSegments(data.post.segments || [])
+				setThumbnail(data.post.thumbnail || "")
+				console.log(data)
+			})
+			.catch((error) => {
+				handleAxiosError(error)
+			})
+	}, [])
+
 	const save = () => {
-		console.log("saving")
-		if (!id) return
 		if (!title) {
 			setTitleErrorMessage("this field be empty")
 			return
@@ -36,27 +48,6 @@ const Editor = () => {
 				}
 			})
 			.catch(error => {
-				handleAxiosError(error)
-			})
-	}
-
-	const createPost = () => {
-		if (id) return
-		if (!title) {
-			setTitleErrorMessage("this field cannot be empty")
-			return
-		}
-
-		api.post("/api/post", { title, description, segments, thumbnail })
-			.then(({ data }) => {
-				if (data.success) {
-					setId(data.post._id)
-					toast.success(data.message)
-				} else {
-					toast.error(data.message)
-				}
-			})
-			.catch((error) => {
 				handleAxiosError(error)
 			})
 	}
@@ -95,7 +86,7 @@ const Editor = () => {
 					className={`w-full p-2 bg-black border-2 ${titleErrorMessage && "border-red-500 placeholder:text-red-500"} outline-none`}
 				/>
 				<div className="flex gap-5 items-center justify-end w-full">
-					<SaveIcon className="cursor-pointer" onClick={() => id != "" ? save() : createPost()} />
+					<SaveIcon className="cursor-pointer" onClick={() => save()} />
 					<TrashIcon className="text-red-500 cursor-pointer" />
 				</div>
 			</div>
