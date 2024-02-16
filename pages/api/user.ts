@@ -1,5 +1,5 @@
 import { serverErrorResponse } from "@/lib/apiResponses"
-import authorize from "@/lib/authorize"
+import { userAuthorize } from "@/lib/authorize"
 import connectDb from "@/lib/connectDb"
 import UserModel from "@/model/user.model"
 import { NextApiRequest, NextApiResponse } from "next"
@@ -14,7 +14,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 
 		if (req.method == "GET") {
-			const id = authorize(req, res)
+			const id = userAuthorize(req, res)
 			if (!id) return
 
 			const user = await UserModel.findOne({ _id: id }, { password: 0 })

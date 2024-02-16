@@ -19,9 +19,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			return
 		}
 
-		const { username, password } = req.body
+		const { email, password } = req.body
 
-		if (!username || !password) {
+		if (!email || !password) {
 			res.status(400).send({
 				success: false,
 				message: "please fill all fields"
@@ -29,7 +29,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			return
 		}
 
-		const user = await UserModel.findOne({ username })
+		const user = await UserModel.findOne({ email })
 		if (!user) {
 			res.status(400).send({
 				success: false,
@@ -47,7 +47,11 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			return
 		}
 
-		const token = jwt.sign(user._id.toString(), process.env.JWT_SECRET!)
+		const payload = {
+			id: user._id.toString(),
+			admin: user.admin
+		}
+		const token = jwt.sign(payload, process.env.JWT_SECRET!)
 
 		res.status(200).send({
 			success: true,

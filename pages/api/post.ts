@@ -1,4 +1,5 @@
 import { serverErrorResponse } from "@/lib/apiResponses"
+import { adminAuthorize } from "@/lib/authorize"
 import connectDb from "@/lib/connectDb"
 import PostModel from "@/model/post.model"
 import { NextApiRequest, NextApiResponse } from "next"
@@ -26,6 +27,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 
 		if (req.method == "POST") {
+			const user = adminAuthorize(req, res)
+			if (!user) return
+
 			const { title, description, segments, thumbnail } = req.body
 
 			if (!title) {
@@ -53,6 +57,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 
 		if (req.method == "PUT") {
+			const user = adminAuthorize(req, res)
+			if (!user) return
+
 			const { id, title, description, segments, thumbnail } = req.body
 
 			if (!id) {
