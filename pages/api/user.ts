@@ -14,10 +14,10 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 
 		if (req.method == "GET") {
-			const id = userAuthorize(req, res)
-			if (!id) return
+			const payload = userAuthorize(req, res)
+			if (!payload) return
 
-			const user = await UserModel.findOne({ _id: id }, { password: 0 })
+			const user = await UserModel.findOne({ _id: payload.id }, { password: 0 })
 
 			res.status(200).send({
 				success: true,
