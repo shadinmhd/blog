@@ -20,10 +20,14 @@ api.interceptors.response.use(
 				return
 			}
 
-			if (error.response?.data.error == "unauthorized") {
+			else if (error.response?.data.error == "unauthorized") {
 				localStorage.removeItem("token")
 				location.assign("/login")
 				return
+			}
+
+			else {
+				return Promise.reject(error)
 			}
 
 		} else {

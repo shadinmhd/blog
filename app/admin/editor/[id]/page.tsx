@@ -1,45 +1,66 @@
 "use client"
-import { SegmentInterface } from "@/interface/post.interface"
-import { useEffect, useState } from "react"
+import { useState, FC, useEffect } from "react"
 import { CldUploadButton } from "next-cloudinary"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import api, { handleAxiosError } from "@/lib/api"
-import { PlusIcon, SaveIcon, TrashIcon } from "lucide-react"
+import { Eye, EyeOff, PenIcon, SaveIcon, TrashIcon } from "lucide-react"
+import MDeditor from "@uiw/react-md-editor"
 import { toast } from "sonner"
-import NewSegment from "@/components/admin/editor/NewSegment"
+import { Editor as TextEditor } from "primereact/editor"
 
 const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
 
-const Editor = ({ params }: { params: { id: string } }) => {
+interface Props {
+	params: {
+		id: string
+	}
+}
 
-	const [id, setId] = useState<String>(params.id)
+const Editor: FC<Props> = ({ params }) => {
 	const [title, setTitle] = useState("")
 	const [titleErrorMessage, setTitleErrorMessage] = useState("")
 	const [description, setDescription] = useState("")
 	const [thumbnail, setThumbnail] = useState("")
-	const [segments, setSegments] = useState<SegmentInterface[]>([])
+	const [content, setContet] = useState("")
+	const [editing, setEditing] = useState(true)
 
 	useEffect(() => {
-		api.get(`/api/post/${id}`)
-			.then(({ data }) => {
-				setDescription(data.post.description || "")
-				setTitle(data.post.title)
-				setSegments(data.post.segments || [])
-				setThumbnail(data.post.thumbnail || "")
-				console.log(data)
-			})
-			.catch((error) => {
-				handleAxiosError(error)
-			})
+		console.log(content)
+	}, [content])
+
+	useEffect(() => {
+		if (params.id) {
+			api.get(`/api/post/${params.id}`)
+				.then(({ data }) => {
+					if (data.success) {
+						setTitle(data.post.title)
+						setDescription(data.post.description)
+						setThumbnail(data.post.content)
+						setContet(data.post.content)
+					} else {
+						toast.error(data.message)
+					}
+				})
+				.catch((error) => {
+					handleAxiosError(error)
+				})
+		}
+		if (!params?.id) {
+			location.href = "/admin/posts"
+		}
 	}, [])
 
+
 	const save = () => {
+		console.log("saving")
+		if (!params.id) return
 		if (!title) {
 			setTitleErrorMessage("this field be empty")
 			return
 		}
+		console.log(content)
 
-		api.put("/api/post", { id, title, description, segments, thumbnail })
+		api.put("/api/post", { id: params.id, title, description, content, thumbnail })
 			.then(({ data }) => {
 				if (data.success) {
 					toast.success(data.message)
@@ -70,11 +91,6 @@ const Editor = ({ params }: { params: { id: string } }) => {
 		setThumbnail("")
 	}
 
-	const addSegment = (type: "paragraph" | "image" | "title" | "code") => {
-		console.log(type)
-		setSegments((prev) => [...prev, { type, content: "" }])
-	}
-
 	return (
 		<div className="flex flex-col gap-5 items-start justify-start h-full w-full px-10">
 			<div className="flex items-center justify-start gap-5 w-full py-10">
@@ -86,11 +102,17 @@ const Editor = ({ params }: { params: { id: string } }) => {
 					className={`w-full p-2 bg-black border-2 ${titleErrorMessage && "border-red-500 placeholder:text-red-500"} outline-none`}
 				/>
 				<div className="flex gap-5 items-center justify-end w-full">
+					{
+						editing ?
+							<Eye className="cursor-pointer" onClick={() => setEditing(false)} /> :
+							<EyeOff className="cursor-pointer" onClick={() => setEditing(true)} />
+					}
 					<SaveIcon className="cursor-pointer" onClick={() => save()} />
 					<TrashIcon className="text-red-500 cursor-pointer" />
+					<PenIcon className="text-blue-500" />
 				</div>
 			</div>
-			<ScrollArea className="w-full h-full">
+			<ScrollArea className="w-full h-full text-black gap-5">
 				<div className="flex flex-col gap-5 items-center justify-center w-full">
 					{
 						thumbnail ?
@@ -111,44 +133,38 @@ const Editor = ({ params }: { params: { id: string } }) => {
 								Upload thumbnail
 							</CldUploadButton>
 					}
-					<textarea
-						value={description}
-						onChange={(e) => setDescription(e.target.value)}
-						placeholder="Enter a quick description here"
-						className="w-full bg-black p-2 outline-none border-2"
-						rows={10}
-					/>
 					{
-						segments.map((e) => {
-							if (e.type == "paragraph")
-								return (
-									<div className="w-full">
-										{e.content}
-									</div>
-								)
-							if (e.type == "title")
-								return (
-									<p className="w-full text-3xl">{e.content}</p>
-								)
-							if (e.type == "image")
-								return (
-									<div>
-
-									</div>
-								)
-							if (e.type == "code")
-								return (
-									<div>
-
-									</div>
-								)
-						})
+						editing ? <textarea
+							value={description}
+							onChange={(e) => setDescription(e.target.value)}
+							placeholder="Enter a quick description here"
+							className={`w-full bg-black p-2 outline-none border-2 text-white`}
+							rows={10}
+						/> :
+							<p className="w-full text-left text-white">{description}</p>
 					}
-					<div className="flex items-center justify-center outline-none w-full py-5">
-						<NewSegment addSegment={addSegment}>
-							<PlusIcon className="text-2xl text-green-500" />
-						</NewSegment>
-					</div>
+					{
+
+						editing ? <MDeditor
+							className="w-full border-2 border-white"
+							height={"auto"}
+							value={content}
+							hideToolbar={true}
+							highlightEnable={true}
+							preview={"edit"}
+							onChange={(e) => e ? setContet(e) : setContet("")}
+						/> :
+							<MDeditor.Markdown
+								className="w-full bg-black text-white"
+								source={content}
+								style={{
+									whiteSpace: "pre-wrap",
+									backgroundColor: "black",
+									padding: "2px",
+									color: "white"
+								}}
+							/>
+					}
 				</div>
 			</ScrollArea>
 		</div>
@@ -156,3 +172,4 @@ const Editor = ({ params }: { params: { id: string } }) => {
 }
 
 export default Editor
+

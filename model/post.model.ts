@@ -1,17 +1,5 @@
-import PostInterface, { SegmentInterface } from "@/interface/post.interface";
+import PostInterface from "@/interface/post.interface";
 import mongoose from "mongoose";
-
-const segmentSchema = new mongoose.Schema<SegmentInterface>({
-	type: {
-		type: String,
-		required: true,
-		enum: ["paragraph", "title", "image", "code"]
-	},
-	content: {
-		type: String,
-		required: true
-	}
-})
 
 const postSchema = new mongoose.Schema<PostInterface>({
 	title: {
@@ -23,9 +11,9 @@ const postSchema = new mongoose.Schema<PostInterface>({
 		type: String,
 		required: true
 	},
-	segments: {
-		type: [segmentSchema],
-		default: []
+	content: {
+		type: String,
+		default: ""
 	},
 	thumbnail: {
 		type: String
