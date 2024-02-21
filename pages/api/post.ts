@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			const user = adminAuthorize(req, res)
 			if (!user) return
 
-			const { title, description, segments, thumbnail } = req.body
+			const { title, description, thumbnail } = req.body
 
 			if (!title) {
 				res.status(400).send({
@@ -43,7 +43,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			const post = await new PostModel({
 				title,
 				description,
-				segments,
 				thumbnail
 			}).save()
 
@@ -60,7 +59,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			const user = adminAuthorize(req, res)
 			if (!user) return
 
-			const { id, title, description, segments, thumbnail } = req.body
+			const { id, title, description, content, thumbnail } = req.body
 
 			if (!id) {
 				res.status(400).send({
@@ -70,7 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 				return
 			}
 
-			await PostModel.updateOne({ _id: id }, { $set: { title, thumbnail, description, segments } })
+			await PostModel.updateOne({ _id: id }, { $set: { title, thumbnail, description, content } })
 
 			res.status(200).send({
 				success: true,
