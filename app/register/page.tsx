@@ -35,7 +35,7 @@ const Register = () => {
 		try {
 			const { data } = await api.post("/api/auth/register", e)
 			if (data.success) {
-				router.push("/admin/login")
+				router.push("/login")
 			} else {
 				toast.error(data.message)
 			}
