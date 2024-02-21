@@ -25,10 +25,6 @@ const Editor: FC<Props> = ({ params }) => {
 	const [editing, setEditing] = useState(true)
 
 	useEffect(() => {
-		console.log(content)
-	}, [content])
-
-	useEffect(() => {
 		if (params.id) {
 			api.get(`/api/post/${params.id}`)
 				.then(({ data }) => {
