@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar"
-import Subscribe from "@/components/home/Subscribe"
 
 const Home = () => {
 
@@ -15,14 +14,14 @@ const Home = () => {
 						<p className="text-xl opacity-80">
 							Welcome to my personal blog, here i share my experience and perspective on all thing tech
 						</p>
+						<p className="text-xl text-center text-orange-500 opacity-80">
+							I am still in the process of developing this website <br />
+							So i don't have any blogs posted yet
+						</p>
 					</div>
-					<Subscribe />
 				</div>
 			</div>
-			<div className="flex bg-black h-screen w-screen flex-col items-center justify-center">
-
-			</div>
-		</div>
+		</div >
 	)
 }
 
