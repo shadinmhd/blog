@@ -1,0 +1,6 @@
+code,
+pre,
+code>span {
+	border-radius: 5px;
+	padding: 4px;
+}
