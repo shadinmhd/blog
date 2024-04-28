@@ -8,8 +8,22 @@ export const Post = defineDocumentType(() => ({
 	name: 'Post',
 	filePathPattern: `**/*.md`,
 	fields: {
-		title: { type: 'string', required: true },
-		date: { type: 'date', required: true },
+		title: {
+			type: 'string',
+			required: true
+		},
+		date: {
+			type: 'date',
+			required: true
+		},
+		published: {
+			type: "boolean",
+			default: false
+		},
+		description: {
+			type: "string",
+			required: true
+		}
 	},
 	computedFields: {
 		url: { type: 'string', resolve: (post) => `/posts/${post._raw.flattenedPath}` },
