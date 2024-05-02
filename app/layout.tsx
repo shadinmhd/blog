@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
 	title: "Shadinmhd",
 	description: "",
+	icons: "/photo.png"
 };
 
 export default function RootLayout({
