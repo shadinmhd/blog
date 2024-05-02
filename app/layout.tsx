@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={cn(inter.className, "flex flex-col items-center bg-background")}>
+			<body className={cn(inter.className, "flex flex-col items-center dark:bg-gray")}>
 				<Navbar />
 				{children}
 			</body>
