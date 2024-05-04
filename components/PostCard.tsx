@@ -5,7 +5,7 @@ import { parseISO, format } from 'date-fns'
 
 const PostCard = ({ post }: { post: Post }) => {
 	return (
-		<Link href={post.url} className="group text-primary  rounded-lg transition-all duration-300">
+		<Link href={post.url} className="group text-primary  rounded-lg transition-all duration-300 w-full">
 			<h2 className="mb-1 dark:text-white text-xl group-hover:underline">
 				{post.title}
 			</h2>
